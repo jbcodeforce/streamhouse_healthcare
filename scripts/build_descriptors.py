@@ -104,9 +104,10 @@ def build_descriptors(
 
 
 def main() -> None:
+    root_dir = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description="Build data product descriptors from dbt manifest")
-    parser.add_argument("--manifest", type=Path, default=Path("../pipelines/target/manifest.json"))
-    parser.add_argument("--output-dir", type=Path, default=Path("data_products/descriptors"))
+    parser.add_argument("--manifest", type=Path, default=root_dir / "pipelines/target/manifest.json")
+    parser.add_argument("--output-dir", type=Path, default=root_dir / "data_products/descriptors")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 

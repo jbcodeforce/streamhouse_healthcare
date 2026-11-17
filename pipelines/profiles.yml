@@ -1,0 +1,13 @@
+cc_flink:
+  target: dev
+  outputs:
+    dev:
+      type: confluent
+      api_key: "{{ env_var('CONFLUENT_CLOUD_FLINK_API_KEY', 'dummy_key') }}"
+      api_secret: "{{ env_var('CONFLUENT_CLOUD_FLINK_API_SECRET', 'dummy_secret') }}"
+      organization_id: "{{ env_var('CONFLUENT_CLOUD_ORGANIZATION_ID', 'dummy_org') }}"
+      environment_id: "{{ env_var('CONFLUENT_CLOUD_ENVIRONMENT_ID', 'dummy_env') }}"
+      compute_pool_id: "{{ env_var('FLINK_SNAPSHOT_Q_COMPUTE_POOL_ID', 'dummy_pool') }}"
+      rest_endpoint: "{{ env_var('FLINK_REST_ENDPOINT', 'https://flink.us-east-1.aws.confluent.cloud') }}"
+      client_id: "{{ env_var('FLINK_CLIENT_ID', 'dbt-streamhouse-healthcare') }}"
+      schema: "{{ env_var('KAFKA_CLUSTER_NAME', 'healthcare_cluster') }}"
