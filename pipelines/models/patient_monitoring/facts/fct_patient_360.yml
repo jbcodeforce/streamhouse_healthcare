@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: fct_patient_360
+    description: "Golden Patient 360 profile served via low-latency RTCE"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+          - type: primary_key
+      - name: full_name
+        data_type: string
+      - name: gender
+        data_type: string
+      - name: birth_date
+        data_type: string
+      - name: risk_tier
+        data_type: string
+      - name: primary_condition
+        data_type: string
+      - name: patient_status
+        data_type: string
+      - name: total_telemetry_events
+        data_type: bigint
+      - name: avg_heart_rate
+        data_type: double
+      - name: avg_spo2
+        data_type: double
+      - name: last_telemetry_ts
+        data_type: timestamp_ltz(3)
+      - name: profile_updated_ts
+        data_type: timestamp_ltz(3)

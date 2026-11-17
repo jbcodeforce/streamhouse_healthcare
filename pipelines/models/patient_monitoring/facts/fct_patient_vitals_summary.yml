@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: fct_patient_vitals_summary
+    description: "Compacted upsert golden record of aggregated patient vitals"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+          - type: primary_key
+      - name: total_telemetry_events
+        data_type: bigint
+      - name: avg_heart_rate
+        data_type: double
+      - name: min_heart_rate
+        data_type: int
+      - name: max_heart_rate
+        data_type: int
+      - name: avg_spo2
+        data_type: double
+      - name: min_spo2
+        data_type: double
+      - name: max_spo2
+        data_type: double
+      - name: last_telemetry_ts
+        data_type: timestamp_ltz(3)

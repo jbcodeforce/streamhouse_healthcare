@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: dim_prescriptions
+    description: "Active doctor prescription thresholds"
+    columns:
+      - name: prescription_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: patient_id
+        data_type: string
+      - name: target_metric
+        data_type: string
+      - name: min_threshold
+        data_type: double
+      - name: max_threshold
+        data_type: double
+      - name: status
+        data_type: string
+      - name: event_ts
+        data_type: timestamp_ltz(3)

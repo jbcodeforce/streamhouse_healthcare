@@ -1,0 +1,5 @@
+model_id,manufacturer,model_name,device_type,target_firmware_version,battery_spec_hours
+MOD-OX-100,MedTech Dynamics,PulseOx Pro,PULSE_OXIMETER,v3.2.1,48
+MOD-ECG-200,CardioStream,SmartECG Bio,ECG_MONITOR,v2.4.0,24
+MOD-BED-500,HospitalCare,CareBed Smart,SMART_BED,v1.8.5,120
+MOD-PUMP-300,InfusionTech,InfuGuard,INFUSION_PUMP,v4.1.0,72

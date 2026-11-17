@@ -1,0 +1,66 @@
+site_name: Streamhouse Healthcare Demo
+site_description: Real-time Patient Health Monitoring, Clinical Alerting, and Medical Device Operations on Confluent Cloud Streamhouse
+site_author: Streamhouse Team
+repo_url: https://github.com/jbcodeforce/streamhouse_healthcare
+repo_name: jbcodeforce/streamhouse_healthcare
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Introduction:
+      - Overview: index.md
+      - Domain Brief: demo_brief.md
+  - Architecture & Design:
+      - Web App Design: web_app_design.md
+      - Flink Streaming DSP: flink_deployment.md
+  - Deployments & Operations:
+      - Local CDC & Postgres: local_cdc.md
+      - Confluent Cloud Terraform: sre_ccloud_tf.md
+  - Presentation Script:
+      - Demo Script: demo_script.md
+  - Cleanup:
+      - Teardown: cleanup.md

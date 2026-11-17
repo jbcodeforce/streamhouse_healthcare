@@ -1,0 +1,80 @@
+{
+  "product_id": "device_ops",
+  "name": "Device Ops",
+  "nodes": [
+    {
+      "id": "fct_device_battery_drain",
+      "label": "fct_device_battery_drain",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-device-battery-drain",
+      "topic": "fct_device_battery_drain",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_device_battery_drain (CEP)\n-- Detects abnormal rapid battery drain (battery dropping >= 15% within 10 minutes)\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['device_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    device_id,\n    start_event_id,\n    trigger_event_id,\n    initial_battery_pct,\n    current_battery_pct,\n    battery_drop,\n    match_ts AS event_ts\nFROM {{ ref('src_telemetry_events') }}\n    MATCH_RECOGNIZE (\n        PARTITION BY device_id\n        ORDER BY event_ts\n        MEASURES\n            A.event_id AS start_event_id,\n            B.event_id AS trigger_event_id,\n            A.battery_pct AS initial_battery_pct,\n            B.battery_pct AS current_battery_pct,\n            A.battery_pct - B.battery_pct AS battery_drop,\n            B.event_ts AS match_ts\n        ONE ROW PER MATCH\n        AFTER MATCH SKIP TO NEXT ROW\n        PATTERN (A B)\n        WITHIN INTERVAL '10' MINUTE\n        DEFINE\n            A AS A.battery_pct > 0,\n            B AS (A.battery_pct - B.battery_pct) >= 15\n    )"
+    },
+    {
+      "id": "fct_device_ota_compliance",
+      "label": "fct_device_ota_compliance",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-device-ota-compliance",
+      "topic": "fct_device_ota_compliance",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_device_ota_compliance\n-- Assesses device firmware vs manufacturer target firmware\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['device_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    d.device_id,\n    d.model_id,\n    d.serial_number,\n    d.firmware_version AS current_firmware,\n    coalesce(m.target_firmware_version, 'v1.0.0') AS target_firmware,\n    CASE\n        WHEN d.firmware_version != coalesce(m.target_firmware_version, 'v1.0.0') THEN 'UPDATE_REQUIRED'\n        ELSE 'COMPLIANT'\n    END AS ota_status,\n    d.battery_pct,\n    d.event_ts\nFROM {{ ref('src_devices') }} AS d\nLEFT JOIN LATERAL SNAPSHOT(\n    input => TABLE {{ ref('ref_device_models') }},\n    on_time => DESCRIPTOR(d.event_ts),\n    load_completed_idle_timeout => INTERVAL '1' MINUTE\n) AS m ON d.model_id = m.model_id"
+    },
+    {
+      "id": "src_telemetry_events",
+      "label": "src_telemetry_events",
+      "type": "source",
+      "statement_name": "",
+      "topic": "src_telemetry_events",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "src_devices",
+      "label": "src_devices",
+      "type": "source",
+      "statement_name": "",
+      "topic": "src_devices",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "ref_device_models",
+      "label": "ref_device_models",
+      "type": "source",
+      "statement_name": "",
+      "topic": "ref_device_models",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_device_battery_drain"
+    },
+    {
+      "source": "src_devices",
+      "target": "fct_device_ota_compliance"
+    },
+    {
+      "source": "ref_device_models",
+      "target": "fct_device_ota_compliance"
+    }
+  ]
+}

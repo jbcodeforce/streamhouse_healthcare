@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: src_telemetry_events
+    description: "Flattened CDC source stream for patient device telemetry events"
+    columns:
+      - name: event_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: device_id
+        data_type: string
+      - name: patient_id
+        data_type: string
+      - name: event_type
+        data_type: string
+      - name: heart_rate
+        data_type: int
+      - name: spo2
+        data_type: double
+      - name: systolic_bp
+        data_type: int
+      - name: diastolic_bp
+        data_type: int
+      - name: lat
+        data_type: double
+      - name: lng
+        data_type: double
+      - name: battery_pct
+        data_type: int
+      - name: button_pressed
+        data_type: boolean
+      - name: event_ts
+        data_type: timestamp_ltz(3)

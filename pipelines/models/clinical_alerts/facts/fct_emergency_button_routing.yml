@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: fct_emergency_button_routing
+    description: "CEP alert match detecting repeated urgent care button presses for routing"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: first_event_id
+        data_type: string
+      - name: trigger_event_id
+        data_type: string
+      - name: press_count
+        data_type: int
+      - name: event_ts
+        data_type: timestamp_ltz(3)

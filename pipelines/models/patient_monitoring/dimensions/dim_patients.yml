@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: dim_patients
+    description: "Enriched patient dimension joined with clinical guidelines"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: full_name
+        data_type: string
+      - name: gender
+        data_type: string
+      - name: birth_date
+        data_type: string
+      - name: risk_tier
+        data_type: string
+      - name: primary_condition
+        data_type: string
+      - name: status
+        data_type: string
+      - name: guideline_hr_min
+        data_type: int
+      - name: guideline_hr_max
+        data_type: int
+      - name: guideline_spo2_min
+        data_type: double
+      - name: event_ts
+        data_type: timestamp_ltz(3)

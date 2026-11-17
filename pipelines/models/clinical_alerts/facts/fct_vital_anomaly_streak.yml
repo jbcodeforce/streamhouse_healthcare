@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: fct_vital_anomaly_streak
+    description: "CEP match detecting 3 consecutive abnormal vital measurements for a patient within 15 minutes"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: first_event_id
+        data_type: string
+      - name: trigger_event_id
+        data_type: string
+      - name: avg_hr_streak
+        data_type: double
+      - name: min_spo2_streak
+        data_type: double
+      - name: event_ts
+        data_type: timestamp_ltz(3)

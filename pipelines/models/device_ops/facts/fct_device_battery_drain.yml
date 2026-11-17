@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: fct_device_battery_drain
+    description: "CEP alert match detecting abnormal rapid device battery drain"
+    columns:
+      - name: device_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: start_event_id
+        data_type: string
+      - name: trigger_event_id
+        data_type: string
+      - name: initial_battery_pct
+        data_type: int
+      - name: current_battery_pct
+        data_type: int
+      - name: battery_drop
+        data_type: int
+      - name: event_ts
+        data_type: timestamp_ltz(3)

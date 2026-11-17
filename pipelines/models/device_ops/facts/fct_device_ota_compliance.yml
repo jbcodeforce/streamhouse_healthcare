@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: fct_device_ota_compliance
+    description: "Evaluates Over-The-Air (OTA) firmware compliance for medical devices"
+    columns:
+      - name: device_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: model_id
+        data_type: string
+      - name: serial_number
+        data_type: string
+      - name: current_firmware
+        data_type: string
+      - name: target_firmware
+        data_type: string
+      - name: ota_status
+        data_type: string
+      - name: battery_pct
+        data_type: int
+      - name: event_ts
+        data_type: timestamp_ltz(3)

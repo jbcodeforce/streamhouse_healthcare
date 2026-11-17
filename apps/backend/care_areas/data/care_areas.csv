@@ -1,0 +1,5 @@
+care_area_id,name,facility_type,center_lat,center_lng,radius_meters
+CA-ICU-01,Intensive Care Unit A,ICU,41.8781,-87.6298,150.0
+CA-CARD-02,Cardiology Step-Down Ward,CARDIOLOGY,41.8790,-87.6310,250.0
+CA-GEN-03,General Medical Ward East,GENERAL,41.8805,-87.6280,400.0
+CA-REHAB-04,Physical Rehab Center,REHAB,41.8750,-87.6350,500.0

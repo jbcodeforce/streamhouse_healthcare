@@ -1,0 +1,24 @@
+version: 2
+
+sources:
+  - name: cdc
+    schema: "{{ env_var('KAFKA_CLUSTER_NAME', 'default_db') }}"
+    tables:
+      - name: care_areas
+        identifier: cdc.public.care_areas
+        description: "CDC topic for care areas and ward perimeters"
+      - name: patients
+        identifier: cdc.public.patients
+        description: "CDC topic for patient demographics and status"
+      - name: devices
+        identifier: cdc.public.devices
+        description: "CDC topic for medical IoT devices"
+      - name: device_assignments
+        identifier: cdc.public.device_assignments
+        description: "CDC topic for patient-device active assignments"
+      - name: prescriptions
+        identifier: cdc.public.prescriptions
+        description: "CDC topic for clinical target metric prescriptions"
+      - name: telemetry_events
+        identifier: cdc.public.telemetry_events
+        description: "CDC topic for high-frequency vital telemetry and button alerts"

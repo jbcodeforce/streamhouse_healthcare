@@ -1,0 +1,196 @@
+{
+  "product_id": "clinical_alerts",
+  "name": "Clinical Alerts",
+  "nodes": [
+    {
+      "id": "src_care_areas",
+      "label": "src_care_areas",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-care-areas",
+      "topic": "src_care_areas",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_care_areas\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['care_area_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.care_area_id, after.care_area_id), 'UNKNOWN') AS care_area_id,\n    coalesce(IF(op = 'd', before.name, after.name), '') AS name,\n    coalesce(IF(op = 'd', before.facility_type, after.facility_type), 'WARD') AS facility_type,\n    coalesce(IF(op = 'd', before.center_lat, after.center_lat), 41.8781) AS center_lat,\n    coalesce(IF(op = 'd', before.center_lng, after.center_lng), -87.6298) AS center_lng,\n    coalesce(IF(op = 'd', before.radius_meters, after.radius_meters), 500.0) AS radius_meters,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'care_areas') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "src_telemetry_events",
+      "label": "src_telemetry_events",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-telemetry-events",
+      "topic": "src_telemetry_events",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_telemetry_events\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['event_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.event_id, after.event_id), 'UNKNOWN') AS event_id,\n    coalesce(IF(op = 'd', before.device_id, after.device_id), 'UNKNOWN') AS device_id,\n    coalesce(IF(op = 'd', before.patient_id, after.patient_id), 'UNKNOWN') AS patient_id,\n    coalesce(IF(op = 'd', before.event_type, after.event_type), 'VITALS') AS event_type,\n    coalesce(IF(op = 'd', before.heart_rate, after.heart_rate), 75) AS heart_rate,\n    coalesce(IF(op = 'd', before.spo2, after.spo2), 98.0) AS spo2,\n    coalesce(IF(op = 'd', before.systolic_bp, after.systolic_bp), 120) AS systolic_bp,\n    coalesce(IF(op = 'd', before.diastolic_bp, after.diastolic_bp), 80) AS diastolic_bp,\n    coalesce(IF(op = 'd', before.lat, after.lat), 41.8781) AS lat,\n    coalesce(IF(op = 'd', before.lng, after.lng), -87.6298) AS lng,\n    coalesce(IF(op = 'd', before.battery_pct, after.battery_pct), 100) AS battery_pct,\n    coalesce(IF(op = 'd', before.button_pressed, after.button_pressed), false) AS button_pressed,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'telemetry_events') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "src_prescriptions",
+      "label": "src_prescriptions",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-prescriptions",
+      "topic": "src_prescriptions",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_prescriptions\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['prescription_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.prescription_id, after.prescription_id), 'UNKNOWN') AS prescription_id,\n    coalesce(IF(op = 'd', before.patient_id, after.patient_id), 'UNKNOWN') AS patient_id,\n    coalesce(IF(op = 'd', before.target_metric, after.target_metric), 'HEART_RATE') AS target_metric,\n    coalesce(IF(op = 'd', before.min_threshold, after.min_threshold), 60.0) AS min_threshold,\n    coalesce(IF(op = 'd', before.max_threshold, after.max_threshold), 100.0) AS max_threshold,\n    coalesce(IF(op = 'd', before.status, after.status), 'ACTIVE') AS status,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'prescriptions') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "dim_prescriptions",
+      "label": "dim_prescriptions",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-dim-prescriptions",
+      "topic": "dim_prescriptions",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Dimension model: dim_prescriptions\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['prescription_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    prescription_id,\n    patient_id,\n    target_metric,\n    min_threshold,\n    max_threshold,\n    status,\n    event_ts\nFROM {{ ref('src_prescriptions') }}\nWHERE status = 'ACTIVE'"
+    },
+    {
+      "id": "fct_prescription_drift",
+      "label": "fct_prescription_drift",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-prescription-drift",
+      "topic": "fct_prescription_drift",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_prescription_drift\n-- Compares actual patient telemetry vs doctor prescription limits\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    t.event_id,\n    t.patient_id,\n    t.device_id,\n    t.heart_rate,\n    t.spo2,\n    p.prescription_id,\n    p.min_threshold AS target_hr_min,\n    p.max_threshold AS target_hr_max,\n    CASE\n        WHEN t.heart_rate > p.max_threshold THEN 'HIGH_HEART_RATE'\n        WHEN t.heart_rate < p.min_threshold THEN 'LOW_HEART_RATE'\n        WHEN t.spo2 < 92.0 THEN 'LOW_SPO2'\n        ELSE 'NORMAL'\n    END AS drift_status,\n    t.event_ts\nFROM {{ ref('src_telemetry_events') }} AS t\nJOIN {{ ref('dim_prescriptions') }} AS p\n    ON t.patient_id = p.patient_id\nWHERE p.target_metric = 'HEART_RATE'\n  AND (t.heart_rate > p.max_threshold OR t.heart_rate < p.min_threshold OR t.spo2 < 92.0)"
+    },
+    {
+      "id": "fct_emergency_button_routing",
+      "label": "fct_emergency_button_routing",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-emergency-button-routing",
+      "topic": "fct_emergency_button_routing",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_emergency_button_routing (CEP)\n-- Detects rapid repeated patient emergency button presses (2 or more within 5 minutes)\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    patient_id,\n    first_event_id,\n    trigger_event_id,\n    press_count,\n    match_ts AS event_ts\nFROM {{ ref('src_telemetry_events') }}\n    MATCH_RECOGNIZE (\n        PARTITION BY patient_id\n        ORDER BY event_ts\n        MEASURES\n            A.event_id AS first_event_id,\n            B.event_id AS trigger_event_id,\n            2 AS press_count,\n            B.event_ts AS match_ts\n        ONE ROW PER MATCH\n        AFTER MATCH SKIP TO NEXT ROW\n        PATTERN (A B)\n        WITHIN INTERVAL '5' MINUTE\n        DEFINE\n            A AS A.button_pressed = true,\n            B AS B.button_pressed = true\n    )"
+    },
+    {
+      "id": "fct_vital_anomaly_streak",
+      "label": "fct_vital_anomaly_streak",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-vital-anomaly-streak",
+      "topic": "fct_vital_anomaly_streak",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_vital_anomaly_streak (CEP)\n-- Detects 3 consecutive abnormal vital readings (HR > 115 bpm or SpO2 < 91%) within 15 minutes\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    patient_id,\n    first_event_id,\n    trigger_event_id,\n    avg_hr_streak,\n    min_spo2_streak,\n    match_ts AS event_ts\nFROM {{ ref('src_telemetry_events') }}\n    MATCH_RECOGNIZE (\n        PARTITION BY patient_id\n        ORDER BY event_ts\n        MEASURES\n            A.event_id AS first_event_id,\n            C.event_id AS trigger_event_id,\n            (A.heart_rate + B.heart_rate + C.heart_rate) / 3.0 AS avg_hr_streak,\n            LEAST(A.spo2, B.spo2, C.spo2) AS min_spo2_streak,\n            C.event_ts AS match_ts\n        ONE ROW PER MATCH\n        AFTER MATCH SKIP TO NEXT ROW\n        PATTERN (A B C)\n        WITHIN INTERVAL '15' MINUTE\n        DEFINE\n            A AS (A.heart_rate > 115 OR A.spo2 < 91.0),\n            B AS (B.heart_rate > 115 OR B.spo2 < 91.0),\n            C AS (C.heart_rate > 115 OR C.spo2 < 91.0)\n    )"
+    },
+    {
+      "id": "fct_geofence_alerts",
+      "label": "fct_geofence_alerts",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-geofence-alerts",
+      "topic": "fct_geofence_alerts",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_geofence_alerts\n-- Detects telemetry events reporting coordinates outside assigned care area radius\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    t.event_id,\n    t.patient_id,\n    t.device_id,\n    t.lat AS current_lat,\n    t.lng AS current_lng,\n    a.care_area_id,\n    c.center_lat,\n    c.center_lng,\n    c.radius_meters,\n    t.event_ts\nFROM {{ ref('src_telemetry_events') }} AS t\nJOIN {{ ref('src_device_assignments') }} AS a\n    ON t.patient_id = a.patient_id AND t.device_id = a.device_id\nJOIN {{ ref('src_care_areas') }} AS c\n    ON a.care_area_id = c.care_area_id\nWHERE ABS(t.lat - c.center_lat) > 0.005 OR ABS(t.lng - c.center_lng) > 0.005"
+    },
+    {
+      "id": "care_areas",
+      "label": "care_areas",
+      "type": "source",
+      "statement_name": "",
+      "topic": "care_areas",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "telemetry_events",
+      "label": "telemetry_events",
+      "type": "source",
+      "statement_name": "",
+      "topic": "telemetry_events",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "prescriptions",
+      "label": "prescriptions",
+      "type": "source",
+      "statement_name": "",
+      "topic": "prescriptions",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "src_device_assignments",
+      "label": "src_device_assignments",
+      "type": "source",
+      "statement_name": "",
+      "topic": "src_device_assignments",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "care_areas",
+      "target": "src_care_areas"
+    },
+    {
+      "source": "telemetry_events",
+      "target": "src_telemetry_events"
+    },
+    {
+      "source": "prescriptions",
+      "target": "src_prescriptions"
+    },
+    {
+      "source": "src_prescriptions",
+      "target": "dim_prescriptions"
+    },
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_prescription_drift"
+    },
+    {
+      "source": "dim_prescriptions",
+      "target": "fct_prescription_drift"
+    },
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_emergency_button_routing"
+    },
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_vital_anomaly_streak"
+    },
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_geofence_alerts"
+    },
+    {
+      "source": "src_device_assignments",
+      "target": "fct_geofence_alerts"
+    },
+    {
+      "source": "src_care_areas",
+      "target": "fct_geofence_alerts"
+    }
+  ]
+}

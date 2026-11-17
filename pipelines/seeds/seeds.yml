@@ -1,0 +1,36 @@
+version: 2
+
+seeds:
+  - name: ref_vital_guidelines
+    description: "Reference clinical guidelines for normal vital ranges by risk tier"
+    columns:
+      - name: guideline_id
+        data_type: string
+      - name: risk_tier
+        data_type: string
+      - name: normal_hr_min
+        data_type: int
+      - name: normal_hr_max
+        data_type: int
+      - name: normal_spo2_min
+        data_type: double
+      - name: normal_systolic_max
+        data_type: int
+      - name: description
+        data_type: string
+
+  - name: ref_device_models
+    description: "Reference specifications and target firmware versions for medical IoT models"
+    columns:
+      - name: model_id
+        data_type: string
+      - name: manufacturer
+        data_type: string
+      - name: model_name
+        data_type: string
+      - name: device_type
+        data_type: string
+      - name: target_firmware_version
+        data_type: string
+      - name: battery_spec_hours
+        data_type: int

@@ -1,0 +1,6 @@
+event_id,device_id,patient_id,event_type,heart_rate,spo2,systolic_bp,diastolic_bp,lat,lng,battery_pct,button_pressed
+EVT-001,DEV-P001,P001,VITALS,72,98.5,120,80,41.8781,-87.6298,88,false
+EVT-002,DEV-P002,P002,VITALS,68,97.0,128,82,41.8790,-87.6310,92,false
+EVT-003,DEV-P003,P003,VITALS,76,99.0,118,78,41.8805,-87.6280,74,false
+EVT-004,DEV-P004,P004,VITALS,84,95.5,135,88,41.8781,-87.6298,65,false
+EVT-005,DEV-P005,P005,VITALS,70,98.0,122,80,41.8750,-87.6350,99,false

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: src_care_areas
+    description: "Flattened CDC source stream for hospital care areas and geofence coordinates"
+    columns:
+      - name: care_area_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: name
+        data_type: string
+      - name: facility_type
+        data_type: string
+      - name: center_lat
+        data_type: double
+      - name: center_lng
+        data_type: double
+      - name: radius_meters
+        data_type: double
+      - name: event_ts
+        data_type: timestamp_ltz(3)

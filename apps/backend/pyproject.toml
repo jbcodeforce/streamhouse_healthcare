@@ -1,0 +1,37 @@
+[project]
+name = "streamhouse-healthcare-backend"
+version = "0.1.0"
+description = "Streamhouse Healthcare backend — FastAPI microservice with PostgreSQL and Confluent Cloud sinks"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "psycopg2-binary>=2.9.10",
+    "confluent-kafka>=2.8.0",
+    "fastavro>=1.10.0",
+    "pydantic-settings>=2.9.0",
+    "python-dotenv>=1.1.0",
+    "certifi>=2026.7.22",
+    "httpx>=0.28.1",
+    "authlib>=1.8.0",
+    "cachetools>=7.2.0",
+    "attrs>=26.1.0",
+    "agno>=3.1.11",
+    "mcp>=2.3.0",
+    "openai>=3.40.0",
+    "fastmcp>=4.1.2",
+    "confluent-sql>=0.8.0",
+    "pandas>=2.2.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.0",
+    "pytest-anyio>=0.0.0",
+]

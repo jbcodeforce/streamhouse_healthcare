@@ -1,0 +1,32 @@
+name: 'streamhouse_healthcare'
+version: '1.0.0'
+config-version: 2
+
+profile: 'cc_flink'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+seeds:
+  streamhouse_healthcare:
+    +column_types:
+      guideline_id: string
+      risk_tier: string
+      model_id: string
+
+models:
+  streamhouse_healthcare:
+    patient_monitoring:
+      +compute_pool_id: "{{ env_var('FLINK_PATIENT_MONITORING_COMPUTE_POOL_ID', 'default_pool') }}"
+    clinical_alerts:
+      +compute_pool_id: "{{ env_var('FLINK_CLINICAL_ALERTS_COMPUTE_POOL_ID', 'default_pool') }}"
+    device_ops:
+      +compute_pool_id: "{{ env_var('FLINK_DEVICE_OPS_COMPUTE_POOL_ID', 'default_pool') }}"

@@ -1,0 +1,175 @@
+{
+  "user_agent": "cc-sql-tools/0.1",
+  "drop_statement_prefix": "sh-hc-drop",
+  "deploy_all": [
+    "patient_monitoring_pipeline",
+    "clinical_alerts_pipeline",
+    "device_ops_pipeline"
+  ],
+  "undeploy_all": [
+    "device_ops_pipeline",
+    "clinical_alerts_pipeline",
+    "patient_monitoring_pipeline"
+  ],
+  "groups": {
+    "patient_monitoring_pipeline": [
+      {
+        "name": "dbt-sh-hc-src-patients",
+        "file": "patient_monitoring/sources/src_patients.sql"
+      },
+      {
+        "name": "dbt-sh-hc-src-devices",
+        "file": "patient_monitoring/sources/src_devices.sql"
+      },
+      {
+        "name": "dbt-sh-hc-src-device-assignments",
+        "file": "patient_monitoring/sources/src_device_assignments.sql"
+      },
+      {
+        "name": "dbt-sh-hc-dim-patients",
+        "file": "patient_monitoring/dimensions/dim_patients.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-patient-vitals-summary",
+        "file": "patient_monitoring/facts/fct_patient_vitals_summary.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-patient-360",
+        "file": "patient_monitoring/facts/fct_patient_360.sql"
+      }
+    ],
+    "clinical_alerts_pipeline": [
+      {
+        "name": "dbt-sh-hc-src-telemetry-events",
+        "file": "clinical_alerts/sources/src_telemetry_events.sql"
+      },
+      {
+        "name": "dbt-sh-hc-src-prescriptions",
+        "file": "clinical_alerts/sources/src_prescriptions.sql"
+      },
+      {
+        "name": "dbt-sh-hc-src-care-areas",
+        "file": "clinical_alerts/sources/src_care_areas.sql"
+      },
+      {
+        "name": "dbt-sh-hc-dim-prescriptions",
+        "file": "clinical_alerts/dimensions/dim_prescriptions.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-prescription-drift",
+        "file": "clinical_alerts/facts/fct_prescription_drift.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-vital-anomaly-streak",
+        "file": "clinical_alerts/facts/fct_vital_anomaly_streak.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-emergency-button-routing",
+        "file": "clinical_alerts/facts/fct_emergency_button_routing.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-geofence-alerts",
+        "file": "clinical_alerts/facts/fct_geofence_alerts.sql"
+      }
+    ],
+    "device_ops_pipeline": [
+      {
+        "name": "dbt-sh-hc-fct-device-ota-compliance",
+        "file": "device_ops/facts/fct_device_ota_compliance.sql"
+      },
+      {
+        "name": "dbt-sh-hc-fct-device-battery-drain",
+        "file": "device_ops/facts/fct_device_battery_drain.sql"
+      }
+    ]
+  },
+  "drop_tables": {
+    "patient_monitoring": [
+      {
+        "table": "fct_patient_360",
+        "materialized": true
+      },
+      {
+        "table": "fct_patient_vitals_summary",
+        "materialized": true
+      },
+      {
+        "table": "dim_patients",
+        "materialized": false
+      },
+      {
+        "table": "src_device_assignments",
+        "materialized": false
+      },
+      {
+        "table": "src_devices",
+        "materialized": false
+      },
+      {
+        "table": "src_patients",
+        "materialized": false
+      }
+    ],
+    "clinical_alerts": [
+      {
+        "table": "fct_geofence_alerts",
+        "materialized": false
+      },
+      {
+        "table": "fct_emergency_button_routing",
+        "materialized": false
+      },
+      {
+        "table": "fct_vital_anomaly_streak",
+        "materialized": false
+      },
+      {
+        "table": "fct_prescription_drift",
+        "materialized": false
+      },
+      {
+        "table": "dim_prescriptions",
+        "materialized": false
+      },
+      {
+        "table": "src_care_areas",
+        "materialized": false
+      },
+      {
+        "table": "src_prescriptions",
+        "materialized": false
+      },
+      {
+        "table": "src_telemetry_events",
+        "materialized": false
+      }
+    ],
+    "device_ops": [
+      {
+        "table": "fct_device_battery_drain",
+        "materialized": false
+      },
+      {
+        "table": "fct_device_ota_compliance",
+        "materialized": false
+      }
+    ],
+    "seeds": [
+      "ref_vital_guidelines",
+      "ref_device_models"
+    ],
+    "cdc": [
+      "cdc.public.care_areas",
+      "cdc.public.patients",
+      "cdc.public.devices",
+      "cdc.public.device_assignments",
+      "cdc.public.prescriptions",
+      "cdc.public.telemetry_events"
+    ],
+    "connect": [
+      "my_connect_configs",
+      "my_connect_offsets",
+      "my_connect_status"
+    ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "product_id": "patient_monitoring",
+  "name": "Patient Monitoring",
+  "nodes": [
+    {
+      "id": "src_device_assignments",
+      "label": "src_device_assignments",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-device-assignments",
+      "topic": "src_device_assignments",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_device_assignments\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['assignment_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.assignment_id, after.assignment_id), 'UNKNOWN') AS assignment_id,\n    coalesce(IF(op = 'd', before.patient_id, after.patient_id), 'UNKNOWN') AS patient_id,\n    coalesce(IF(op = 'd', before.device_id, after.device_id), 'UNKNOWN') AS device_id,\n    coalesce(IF(op = 'd', before.care_area_id, after.care_area_id), 'UNKNOWN') AS care_area_id,\n    coalesce(IF(op = 'd', before.bed_label, after.bed_label), 'UNASSIGNED') AS bed_label,\n    coalesce(IF(op = 'd', before.status, after.status), 'ACTIVE') AS status,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'device_assignments') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "src_devices",
+      "label": "src_devices",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-devices",
+      "topic": "src_devices",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_devices\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['device_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.device_id, after.device_id), 'UNKNOWN') AS device_id,\n    coalesce(IF(op = 'd', before.model_id, after.model_id), 'MOD-OX-100') AS model_id,\n    coalesce(IF(op = 'd', before.serial_number, after.serial_number), '') AS serial_number,\n    coalesce(IF(op = 'd', before.firmware_version, after.firmware_version), 'v1.0.0') AS firmware_version,\n    coalesce(IF(op = 'd', before.battery_pct, after.battery_pct), 100) AS battery_pct,\n    coalesce(IF(op = 'd', before.status, after.status), 'AVAILABLE') AS status,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'devices') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "src_patients",
+      "label": "src_patients",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-src-patients",
+      "topic": "src_patients",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Source model: src_patients\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    coalesce(IF(op = 'd', before.patient_id, after.patient_id), 'UNKNOWN') AS patient_id,\n    coalesce(IF(op = 'd', before.full_name, after.full_name), '') AS full_name,\n    coalesce(IF(op = 'd', before.gender, after.gender), 'U') AS gender,\n    coalesce(IF(op = 'd', before.birth_date, after.birth_date), '1970-01-01') AS birth_date,\n    coalesce(IF(op = 'd', before.risk_tier, after.risk_tier), 'LOW') AS risk_tier,\n    coalesce(IF(op = 'd', before.primary_condition, after.primary_condition), 'General Observation') AS primary_condition,\n    coalesce(IF(op = 'd', before.status, after.status), 'ACTIVE') AS status,\n    `$rowtime` AS event_ts\nFROM {{ source('cdc', 'patients') }}\nWHERE op != 'd'"
+    },
+    {
+      "id": "dim_patients",
+      "label": "dim_patients",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-dim-patients",
+      "topic": "dim_patients",
+      "table_type": "streaming_table",
+      "compute_pool_id": "default_pool",
+      "is_product": false,
+      "external": false,
+      "raw_sql": "-- Dimension model: dim_patients\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='streaming_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'append',\n            'kafka.cleanup-policy': 'delete',\n            'scan.bounded.mode': 'unbounded',\n            'scan.startup.mode': 'earliest-offset',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    p.patient_id,\n    p.full_name,\n    p.gender,\n    p.birth_date,\n    p.risk_tier,\n    p.primary_condition,\n    p.status,\n    coalesce(g.normal_hr_min, 60) AS guideline_hr_min,\n    coalesce(g.normal_hr_max, 100) AS guideline_hr_max,\n    coalesce(g.normal_spo2_min, 95.0) AS guideline_spo2_min,\n    p.event_ts\nFROM {{ ref('src_patients') }} AS p\nLEFT JOIN LATERAL SNAPSHOT(\n    input => TABLE {{ ref('ref_vital_guidelines') }},\n    on_time => DESCRIPTOR(p.event_ts),\n    load_completed_idle_timeout => INTERVAL '1' MINUTE\n) AS g ON p.risk_tier = g.risk_tier"
+    },
+    {
+      "id": "fct_patient_vitals_summary",
+      "label": "fct_patient_vitals_summary",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-patient-vitals-summary",
+      "topic": "fct_patient_vitals_summary",
+      "table_type": "materialized_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_patient_vitals_summary\n-- Materialized table (upsert, compacted) for low-latency RTCE and snapshot queries\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='materialized_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'upsert',\n            'connector': 'confluent',\n            'kafka.cleanup-policy': 'compact',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    patient_id,\n    COUNT(*) AS total_telemetry_events,\n    CAST(AVG(heart_rate) AS DOUBLE) AS avg_heart_rate,\n    MIN(heart_rate) AS min_heart_rate,\n    MAX(heart_rate) AS max_heart_rate,\n    CAST(AVG(spo2) AS DOUBLE) AS avg_spo2,\n    MIN(spo2) AS min_spo2,\n    MAX(spo2) AS max_spo2,\n    MAX(event_ts) AS last_telemetry_ts\nFROM {{ ref('src_telemetry_events') }}\nGROUP BY patient_id"
+    },
+    {
+      "id": "fct_patient_360",
+      "label": "fct_patient_360",
+      "type": "statement",
+      "statement_name": "dbt-sh-hc-fct-patient-360",
+      "topic": "fct_patient_360",
+      "table_type": "materialized_table",
+      "compute_pool_id": "default_pool",
+      "is_product": true,
+      "external": false,
+      "raw_sql": "-- Fact model: fct_patient_360\n-- Golden record for Patient 360 served via Lightning / RTCE and Chat Assistant\n-- Note: After editing query logic, run dbt run --full-refresh\n{{\n    config(\n        materialized='materialized_table',\n        distributed_by={'columns': ['patient_id'], 'buckets': 1},\n        with={\n            'changelog.mode': 'upsert',\n            'connector': 'confluent',\n            'kafka.cleanup-policy': 'compact',\n            'value.format': 'avro-registry'\n        }\n    )\n}}\n\nSELECT\n    p.patient_id,\n    p.full_name,\n    p.gender,\n    p.birth_date,\n    p.risk_tier,\n    p.primary_condition,\n    p.status AS patient_status,\n    coalesce(v.total_telemetry_events, 0) AS total_telemetry_events,\n    coalesce(v.avg_heart_rate, 75.0) AS avg_heart_rate,\n    coalesce(v.avg_spo2, 98.0) AS avg_spo2,\n    v.last_telemetry_ts,\n    p.event_ts AS profile_updated_ts\nFROM {{ ref('dim_patients') }} AS p\nLEFT JOIN {{ ref('fct_patient_vitals_summary') }} AS v\n    ON p.patient_id = v.patient_id"
+    },
+    {
+      "id": "device_assignments",
+      "label": "device_assignments",
+      "type": "source",
+      "statement_name": "",
+      "topic": "device_assignments",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "devices",
+      "label": "devices",
+      "type": "source",
+      "statement_name": "",
+      "topic": "devices",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "patients",
+      "label": "patients",
+      "type": "source",
+      "statement_name": "",
+      "topic": "patients",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "ref_vital_guidelines",
+      "label": "ref_vital_guidelines",
+      "type": "source",
+      "statement_name": "",
+      "topic": "ref_vital_guidelines",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    },
+    {
+      "id": "src_telemetry_events",
+      "label": "src_telemetry_events",
+      "type": "source",
+      "statement_name": "",
+      "topic": "src_telemetry_events",
+      "table_type": "source",
+      "compute_pool_id": "",
+      "is_product": false,
+      "external": true,
+      "raw_sql": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "device_assignments",
+      "target": "src_device_assignments"
+    },
+    {
+      "source": "devices",
+      "target": "src_devices"
+    },
+    {
+      "source": "patients",
+      "target": "src_patients"
+    },
+    {
+      "source": "src_patients",
+      "target": "dim_patients"
+    },
+    {
+      "source": "ref_vital_guidelines",
+      "target": "dim_patients"
+    },
+    {
+      "source": "src_telemetry_events",
+      "target": "fct_patient_vitals_summary"
+    },
+    {
+      "source": "dim_patients",
+      "target": "fct_patient_360"
+    },
+    {
+      "source": "fct_patient_vitals_summary",
+      "target": "fct_patient_360"
+    }
+  ]
+}

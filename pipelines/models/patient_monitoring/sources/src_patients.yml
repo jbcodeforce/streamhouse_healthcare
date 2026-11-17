@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: src_patients
+    description: "Flattened CDC source stream for patient records"
+    columns:
+      - name: patient_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: full_name
+        data_type: string
+      - name: gender
+        data_type: string
+      - name: birth_date
+        data_type: string
+      - name: risk_tier
+        data_type: string
+      - name: primary_condition
+        data_type: string
+      - name: status
+        data_type: string
+      - name: event_ts
+        data_type: timestamp_ltz(3)

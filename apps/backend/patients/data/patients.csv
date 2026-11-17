@@ -1,0 +1,6 @@
+patient_id,full_name,gender,birth_date,risk_tier,primary_condition,status
+P001,Alice Smith,F,1980-05-12,HIGH,Arrhythmia / Post-Op,ACTIVE
+P002,Bob Jones,M,1975-11-03,MEDIUM,Hypertension Observation,ACTIVE
+P003,Carol White,F,1990-02-28,LOW,Routine Maternity Monitor,ACTIVE
+P004,Lindsay Lee,M,1988-07-19,CRITICAL,Cardiac ICU Recovery,ACTIVE
+P005,Eve Brown,F,1982-09-05,MEDIUM,Respiratory Step-Down,ACTIVE

@@ -1,0 +1,9 @@
+confluent_cloud_api_key    = "YOUR_CONFLUENT_CLOUD_API_KEY"
+confluent_cloud_api_secret = "YOUR_CONFLUENT_CLOUD_API_SECRET"
+prefix                     = "sh-hc"
+cloud_provider             = "AWS"
+cc_region                  = "us-east-1"
+flink_max_cfu              = 10
+flink_alerts_max_cfu       = 10
+flink_device_max_cfu       = 10
+flink_sn_max_cfu           = 10

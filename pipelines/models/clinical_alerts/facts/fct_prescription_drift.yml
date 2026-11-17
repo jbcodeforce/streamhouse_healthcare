@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: fct_prescription_drift
+    description: "Detected drift between actual vital telemetry and prescribed target ranges"
+    columns:
+      - name: event_id
+        data_type: string
+        constraints:
+          - type: not_null
+      - name: patient_id
+        data_type: string
+      - name: device_id
+        data_type: string
+      - name: heart_rate
+        data_type: int
+      - name: spo2
+        data_type: double
+      - name: prescription_id
+        data_type: string
+      - name: target_hr_min
+        data_type: double
+      - name: target_hr_max
+        data_type: double
+      - name: drift_status
+        data_type: string
+      - name: event_ts
+        data_type: timestamp_ltz(3)

@@ -1,0 +1,5 @@
+guideline_id,risk_tier,normal_hr_min,normal_hr_max,normal_spo2_min,normal_systolic_max,description
+GL-LOW,LOW,60,100,95.0,120,Standard adult baseline vitals
+GL-MEDIUM,MEDIUM,55,105,93.0,130,Moderate observation risk baseline
+GL-HIGH,HIGH,50,110,92.0,140,High risk ICU/Cardiac baseline guidelines
+GL-CRITICAL,CRITICAL,45,120,90.0,150,Critical care vital thresholds
